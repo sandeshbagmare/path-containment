@@ -5,12 +5,13 @@ parameters. Joining them with ``Path`` is not enough: ``os.path.join("uploads", 
 /etc/passwd")`` hands back a path outside the directory, and a symlink inside it can
 point anywhere as well.
 
+    >>> from pathlib import Path
     >>> from path_containment import safe_join
-    >>> safe_join("/srv/uploads", "report.txt").as_posix()
-    '/srv/uploads/report.txt'
-    >>> safe_join("/srv/uploads", "../etc/passwd")   # doctest: +SKIP
+    >>> safe_join(Path.cwd() / "uploads", "report.txt").name
+    'report.txt'
+    >>> safe_join("uploads", "../etc/passwd")
     Traceback (most recent call last):
-    UnsafePathError: ...
+    path_containment.UnsafePathError: parent directory in path component: '../etc/passwd'
 
 Standard library only, Python 3.9+.
 """
