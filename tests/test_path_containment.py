@@ -1,6 +1,7 @@
 """Tests for path_containment."""
 
 import os
+from pathlib import Path
 
 import pytest
 
@@ -185,3 +186,34 @@ class TestSanitizeFilename:
     def test_a_bad_max_length_raises(self):
         with pytest.raises(ValueError, match="max_length"):
             sanitize_filename("a", max_length=0)
+
+
+class TestRigour:
+    """A resolved path outside the root is refused, whatever produced it."""
+
+    def test_a_symlinked_directory_that_escapes_is_refused(self, tmp_path, monkeypatch):
+        root = tmp_path / "root"
+        root.mkdir()
+        outside = tmp_path / "outside"
+        outside.mkdir()
+
+        real_resolve = Path.resolve
+
+        def fake(self, *args, **kwargs):
+            if self.name == "escape":
+                return outside
+            return real_resolve(self, *args, **kwargs)
+
+        monkeypatch.setattr(Path, "resolve", fake)
+        with pytest.raises(UnsafePathError, match="outside"):
+            safe_join(root, "escape")
+
+    def test_the_root_itself_is_allowed(self, tmp_path):
+        root = tmp_path / "root"
+        root.mkdir()
+        assert safe_join(root) == root.resolve()
+
+    def test_an_empty_or_dot_part_is_skipped(self, tmp_path):
+        root = tmp_path / "root"
+        root.mkdir()
+        assert safe_join(root, "", ".", "a.txt") == (root / "a.txt").resolve()
