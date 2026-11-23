@@ -1,29 +1,23 @@
-# path-containment
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sandeshbagmare/path-containment/main/assets/banner.svg" width="100%" alt="path-containment: keep untrusted paths inside their directory">
+</p>
 
-Keep a path inside the directory it belongs to — for uploads, archive members and
-filenames, on Windows and POSIX.
+<p align="center">
+  <a href="https://pypi.org/project/path-containment/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/path-containment.svg"></a>
+  <a href="https://pypi.org/project/path-containment/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/path-containment.svg"></a>
+  <a href="https://pypi.org/project/path-containment/"><img alt="Downloads" src="https://img.shields.io/pypi/dm/path-containment.svg"></a>
+  <a href="https://github.com/sandeshbagmare/path-containment/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/sandeshbagmare/path-containment/actions/workflows/ci.yml/badge.svg"></a>
+  <a href="https://github.com/sandeshbagmare/path-containment/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/pypi/l/path-containment.svg"></a>
+  <a href="https://sandeshbagmare.github.io/path-containment/"><img alt="docs" src="https://img.shields.io/badge/docs-online-2ea44f.svg"></a>
+  <a href="https://pypi.org/project/path-containment/"><img alt="zero dependencies" src="https://img.shields.io/badge/dependencies-0-2ea44f.svg"></a>
+</p>
 
-[![PyPI](https://img.shields.io/pypi/v/path-containment.svg)](https://pypi.org/project/path-containment/)
-[![Python](https://img.shields.io/pypi/pyversions/path-containment.svg)](https://pypi.org/project/path-containment/)
-[![tests](https://github.com/sandeshbagmare/path-containment/actions/workflows/ci.yml/badge.svg)](https://github.com/sandeshbagmare/path-containment/actions/workflows/ci.yml)
-[![license](https://img.shields.io/pypi/l/path-containment.svg)](https://github.com/sandeshbagmare/path-containment/blob/main/LICENSE)
+<h3 align="center">keep untrusted paths inside their directory</h3>
+<p align="center"><em>Standard library only. No runtime dependencies. Python 3.9+.</em></p>
 
-```python
-from path_containment import safe_target, sanitize_filename
-
-for member in archive.namelist():                 # zip-slip, closed
-    destination = safe_target("unpacked", member)
-
-name = sanitize_filename(user_supplied_name)      # "CON", "a/b", "x?.txt" → safe
-```
-
-Three sources of path trouble, one small module:
-
-| input | danger |
-| ----- | ------ |
-| `../../etc/passwd` in an archive | written outside the extraction directory |
-| a symlink inside the directory | resolves somewhere else entirely |
-| `CON`, `a/b`, `x?.txt` | fails or surprises on Windows |
+<p align="center">
+  <img src="https://raw.githubusercontent.com/sandeshbagmare/path-containment/main/assets/how.svg" width="720" alt="how path-containment fits in">
+</p>
 
 ## Install
 

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>path-containment — keep untrusted paths inside their directory</title>
+<meta name="description" content="Keep untrusted paths inside their directory. Standard library only, Python 3.9+.">
+<meta property="og:title" content="path-containment — keep untrusted paths inside their directory">
+<meta property="og:description" content="Keep untrusted paths inside their directory. Standard library only, Python 3.9+.">
+<meta property="og:image" content="https://raw.githubusercontent.com/sandeshbagmare/path-containment/main/assets/banner.svg">
+<meta property="og:type" content="website">
+<link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: hsl(352 45% 8%);
+    --ink: #e6edf6;
+    --muted: #9fb0c6;
+    --line: hsl(352 35% 26%);
+    --accent: hsl(300 88% 66%);
+    --soft: hsl(300 92% 80%);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 16px/1.65 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  a { color: var(--soft); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  header {
+    position: sticky; top: 0; z-index: 9; display: flex; gap: 18px; align-items: center;
+    padding: 14px 24px; background: rgba(8, 12, 20, 0.86); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  header .mark { width: 26px; height: 26px; }
+  header strong { font-family: ui-monospace, monospace; letter-spacing: 0.02em; }
+  header nav { margin-left: auto; display: flex; gap: 16px; font-size: 14px; }
+  .hero { max-width: 1180px; margin: 0 auto; padding: 18px 20px 0; }
+  .hero img { width: 100%; border-radius: 14px; box-shadow: 0 18px 50px rgba(0,0,0,0.45); }
+  main { max-width: 900px; margin: 0 auto; padding: 28px 20px 80px; }
+  h1, h2, h3, h4 { line-height: 1.25; }
+  h2 { margin-top: 44px; padding-top: 18px; border-top: 1px solid var(--line); }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em;
+    background: rgba(148, 163, 184, 0.15); padding: 1px 5px; border-radius: 5px;
+  }
+  pre.code {
+    position: relative; background: #070b12; border: 1px solid var(--line);
+    border-radius: 12px; padding: 16px; overflow-x: auto;
+  }
+  pre.code code { background: none; padding: 0; font-size: 14px; }
+  pre .lang {
+    position: absolute; top: 8px; right: 12px; font-size: 11px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; }
+  img { max-width: 100%; }
+  blockquote {
+    margin: 18px 0; padding: 4px 16px; border-left: 3px solid var(--accent);
+    color: var(--muted);
+  }
+  footer {
+    border-top: 1px solid var(--line); padding: 26px 20px; color: var(--muted);
+    font-size: 14px; text-align: center;
+  }
+</style>
+</head>
+<body>
+<header>
+  <img class="mark" src="../assets/logo.svg" alt="">
+  <strong>path-containment</strong>
+  <nav>
+    <a href="https://pypi.org/project/path-containment/">PyPI</a>
+    <a href="https://github.com/sandeshbagmare/path-containment">GitHub</a>
+    <a href="https://github.com/sandeshbagmare/path-containment/issues">Issues</a>
+    <a href="https://github.com/sandeshbagmare/path-containment/blob/main/CHANGELOG.md">Changelog</a>
+  </nav>
+</header>
+<div class="hero"><img src="../assets/banner.svg" alt="path-containment"></div>
+<main>
+<p align="center">
+  <img src="../assets/how.svg" width="720" alt="how path-containment fits in">
+</p>
+<h2>Install</h2>
+<pre class="code"><span class="lang">console</span><code>pip install path-containment</code></pre>
+<h2>API</h2>
+<pre class="code"><span class="lang">python</span><code>from path_containment import (
+    UnsafePathError, is_within, safe_join, safe_member_name, safe_target, sanitize_filename,
+)
+
+is_within(&quot;/srv/uploads&quot;, &quot;/srv/uploads/a/b.txt&quot;)    # True
+is_within(&quot;/srv/uploads&quot;, &quot;/srv/other&quot;)              # False
+
+safe_join(&quot;/srv/uploads&quot;, &quot;reports&quot;, &quot;q1.pdf&quot;)       # /srv/uploads/reports/q1.pdf
+safe_join(&quot;/srv/uploads&quot;, &quot;../etc/passwd&quot;)           # raises UnsafePathError
+
+safe_member_name(&quot;./docs\\a.txt&quot;)                    # &quot;docs/a.txt&quot;
+safe_member_name(&quot;/etc/passwd&quot;)                      # raises
+safe_target(&quot;/srv/uploads&quot;, &quot;..\\..\\win.ini&quot;)       # raises
+
+sanitize_filename(&#x27;a/b:c?.txt&#x27;)                      # &quot;a_b_c_.txt&quot;
+sanitize_filename(&quot;CON&quot;)                             # &quot;_CON&quot;
+sanitize_filename(&quot;name.txt...&quot;)                     # &quot;name.txt&quot;</code></pre>
+<p>Every refusal raises <code>UnsafePathError</code>, a <code>ValueError</code>, with a message that says what was wrong with which component.</p>
+<h2>Why not <code>os.path.join</code></h2>
+<p><code>os.path.join("uploads", "../../etc/passwd")</code> returns a path outside <code>uploads</code>, and <code>Path.resolve()</code> alone only tells you where it <em>lands</em> — after the fact. On Windows <code>ntpath.isabs("/etc/passwd")</code> is <code>False</code> (there is no drive), so a check that relies on <code>isabs</code> alone lets that through. Both cases are covered here, and the resolved result is compared against the resolved base, which also catches a symlink that points outside.</p>
+<h2>Behaviour worth knowing</h2>
+<ul>
+<li>`<code>safe_join</code>` returns an <strong>absolute, resolved</strong> path. It creates nothing.</li>
+<li>A missing target is fine: only the path is checked, not existence.</li>
+<li>`<code>safe_member_name</code><code> normalises </code>\<code> to </code>/<code>, strips </code>./<code>, collapses </code>//`, and refuses</li>
+</ul>
+<p>  absolute paths, drive letters, control characters and any <code>..</code> component.</p>
+<ul>
+<li>`<code>sanitize_filename</code><code> keeps unicode, replaces </code>/ \ : * ? " &lt; &gt; |` and control</li>
+</ul>
+<p>  characters, trims trailing dots and spaces, prefixes reserved Windows device names   (<code>CON</code>, <code>NUL</code>, <code>COM1</code>…) and truncates to <code>max_length</code> without leaving a trailing dot.</p>
+<h2>Development</h2>
+<pre class="code"><span class="lang">console</span><code>python -m venv .venv
+.venv/bin/pip install -e &quot;.[test]&quot;
+.venv/bin/pytest</code></pre>
+<h2>License</h2>
+<p>MIT.</p>
+</main>
+<footer>
+  path-containment · MIT · standard library only ·
+  <a href="https://github.com/sandeshbagmare/path-containment">source</a> ·
+  <a href="https://pypi.org/project/path-containment/">pip install path-containment</a>
+</footer>
+</body>
+</html>
